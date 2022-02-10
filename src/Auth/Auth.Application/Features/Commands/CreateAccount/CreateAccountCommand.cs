@@ -1,15 +1,18 @@
-﻿using Auth.Application.Features.Commands.CreateAccount.Dto;
-using MediatR;
+﻿using MediatR;
 
 namespace Auth.Application.Features.Commands.CreateAccount
 {
     public class CreateAccountCommand : IRequest<CreateAccountResult>
     {
-        public CreateAccountCommand(CreateAccountRequest request)
-        {
-            AccountRequest = request;
-        }
-        
-        public CreateAccountRequest AccountRequest { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public A A { get; set; }
+    }
+
+
+    public class A
+    {
+        public string Test { get; set; }
     }
 }

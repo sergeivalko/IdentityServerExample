@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using IdentityServer4.Models;
 
-namespace Auth.Application.Options
+namespace Auth.Infrastructure.Options
 {
     public class IdentityOptions
     {

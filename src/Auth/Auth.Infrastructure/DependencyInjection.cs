@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using IdentityOptions = Auth.Infrastructure.Options.IdentityOptions;
 
 namespace Auth.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection serviceCollection,
+            IdentityOptions identityOptions, string connectionString)
         {
             serviceCollection.AddDbContext<AuthContext>(options =>
                 {
@@ -31,17 +33,17 @@ namespace Auth.Infrastructure
                 .AddEntityFrameworkStores<AuthContext>()
                 .AddDefaultTokenProviders();
 
-
             serviceCollection.AddTransient<IProfileService, ProfileService>();
-            
+            serviceCollection.AddIdentityConfiguration(identityOptions);
+
             return serviceCollection;
         }
-        
+
         public static void CallDbMigrateExtension(this IApplicationBuilder app)
         {
             using var serviceScope = app.ApplicationServices.CreateScope();
             var context = serviceScope.ServiceProvider.GetService<AuthContext>();
-          
+
             context?.Database?.Migrate();
 
             var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<AuthContext>>();
@@ -49,6 +51,19 @@ namespace Auth.Infrastructure
             var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>();
 
             new DatabaseSeed().SeedAsync(userManager, roleManager, logger, 1).Wait();
+        }
+
+        private static void AddIdentityConfiguration(this IServiceCollection serviceCollection,
+            IdentityOptions identityOptions)
+        {
+            serviceCollection.AddIdentityServer(x => { x.Authentication.CookieLifetime = TimeSpan.FromHours(1); })
+                .AddAspNetIdentity<User>()
+                .AddInMemoryClients(identityOptions.Clients)
+                .AddInMemoryApiResources(identityOptions.ApiResources)
+                .AddInMemoryIdentityResources(identityOptions.IdentityResources)
+                .AddInMemoryApiScopes(identityOptions.ApiScopes)
+                .AddDeveloperSigningCredential()
+                .AddResourceOwnerValidator<OwnerResourcePasswordValidator>();
         }
     }
 }

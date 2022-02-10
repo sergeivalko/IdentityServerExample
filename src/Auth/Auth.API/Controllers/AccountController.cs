@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Auth.Application.Features.Commands.CreateAccount;
-using Auth.Application.Features.Commands.CreateAccount.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,14 +16,14 @@ namespace Auth.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _mediator.Send(new CreateAccountCommand(request));
+            var result = await _mediator.Send(request);
             return Ok(result);
         }
     }

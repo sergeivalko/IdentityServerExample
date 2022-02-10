@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Auth.API.Extensions;
+using Auth.API.Middleware;
 using Auth.Infrastructure;
-using Auth.Infrastructure.Services;
 
 namespace Auth.API
 {
@@ -22,16 +22,7 @@ namespace Auth.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentityServer()
-                .AddInMemoryClients(IdentityConfiguration.GetClients)
-                .AddInMemoryApiResources(IdentityConfiguration.GetApiResources())
-                .AddInMemoryIdentityResources(IdentityConfiguration.GetIdentityResources)
-                .AddInMemoryApiScopes(IdentityConfiguration.Get())
-                .AddDeveloperSigningCredential()
-                .AddResourceOwnerValidator<OwnerResourcePasswordValidator>();
-
             services.ConfigureDependencies(Configuration);
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -44,15 +35,18 @@ namespace Auth.API
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth.API v1"));
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseRouting();
             app.UseIdentityServer();
+
+            app.UseAuthentication();
             app.UseAuthorization();
-            
             app.CallDbMigrateExtension();
             
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
