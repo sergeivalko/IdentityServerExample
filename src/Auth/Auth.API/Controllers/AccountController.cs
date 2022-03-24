@@ -18,11 +18,6 @@ namespace Auth.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var result = await _mediator.Send(request);
             return Ok(result);
         }

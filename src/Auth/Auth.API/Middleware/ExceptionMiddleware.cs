@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Auth.API.Middleware
 {
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public ExceptionMiddleware(RequestDelegate next)
         {
@@ -37,15 +41,13 @@ namespace Auth.API.Middleware
         private static Task HandleExceptionAsync(HttpContext context, string message, int errorCode)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
 
-            var result = JsonConvert.SerializeObject(new HttpRequestError
+            var result = JsonSerializer.Serialize(new HttpRequestError
             {
                 ErrorCode = errorCode,
                 Error = message
-            }, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+            }, JsonSerializerOptions);
 
             return context.Response.WriteAsync(result);
         }
@@ -54,24 +56,22 @@ namespace Auth.API.Middleware
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
-            
+
             dynamic expando = new ExpandoObject();
             IDictionary<string, object> validationErrorObject = expando;
-            
+
             foreach (var validationExceptionError in validationException.Errors)
             {
-                validationErrorObject[validationExceptionError.PropertyName] = new string[] { validationExceptionError.ErrorMessage };
+                validationErrorObject[validationExceptionError.PropertyName] =
+                    new[] { validationExceptionError.ErrorMessage };
             }
-            
-            var result = JsonConvert.SerializeObject(validationErrorObject, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+
+            var result = JsonSerializer.Serialize(validationErrorObject, JsonSerializerOptions);
 
             return context.Response.WriteAsync(result);
         }
     }
-    
+
     public class HttpRequestError
     {
         public int ErrorCode { get; set; }
