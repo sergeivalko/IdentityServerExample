@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Common\Infrastructure\StormShop.Infrastructure.Kafka\StormShop.Infrastructure.Kafka.csproj" />
         <ProjectReference Include="..\Auth.Infrastructure\Auth.Infrastructure.csproj" />
     </ItemGroup>
 

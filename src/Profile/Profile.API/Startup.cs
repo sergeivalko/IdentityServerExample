@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Profile.API.Extensions;
+using Profile.API.Middleware;
 
 namespace Profile.API
 {
@@ -33,9 +35,11 @@ namespace Profile.API
                 });
             services.AddControllers();
 
+            services.ConfigureDependencies(Configuration);
+            
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Orders.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Profile.API", Version = "v1" });
             });
         }
 
@@ -49,6 +53,8 @@ namespace Profile.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Orders.API v1"));
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             app.UseRouting();
 
             app.UseAuthentication();

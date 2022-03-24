@@ -28,7 +28,6 @@ namespace Auth.Infrastructure.Services
             }
 
             var signInResult = await _signInManager.PasswordSignInAsync(user, context.Password, false, true);
-
             if (!signInResult.Succeeded)
             {
                 context.Result = new GrantValidationResult(TokenRequestErrors.UnauthorizedClient);
