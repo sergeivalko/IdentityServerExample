@@ -19,7 +19,7 @@ namespace Profile.Infrastructure
 
             services
                 .AddMongo(configuration)
-                .AddTransient<IProfileUnitOfWork, ProfileUnitOfWork>();
+                .AddScoped<IProfileUnitOfWork, ProfileUnitOfWork>();
 
             services.AddMediatR(typeof(ServiceCollectionExtension));
             services.AddScoped<IFileService, DirectoryFileService>();

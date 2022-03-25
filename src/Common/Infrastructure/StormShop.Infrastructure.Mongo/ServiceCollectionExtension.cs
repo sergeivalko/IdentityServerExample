@@ -9,7 +9,7 @@ namespace StormShop.Infrastructure.Mongo
         public static IServiceCollection AddMongo(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MongoOptions>(configuration.GetSection("Mongo"));
-            services.AddTransient<IMongoContext, MongoContext>();
+            services.AddScoped<IMongoContext, MongoContext>();
             return services;
         } 
     }

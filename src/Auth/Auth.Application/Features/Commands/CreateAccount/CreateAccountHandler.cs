@@ -17,21 +17,18 @@ namespace Auth.Application.Features.Commands.CreateAccount
     public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, CreateAccountResult>
     {
         private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
         private readonly IBusProducer<UserCreated> _busProducer;
 
-        public CreateAccountHandler(UserManager<User> userManager, SignInManager<User> signInManager,
-            IBusProducer<UserCreated> busProducer)
+        public CreateAccountHandler(UserManager<User> userManager, IBusProducer<UserCreated> busProducer)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _busProducer = busProducer;
         }
 
         public async Task<CreateAccountResult> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             var userExists = await _userManager.FindByEmailAsync(request.Email);
-            
+
             if (userExists != null)
             {
                 throw new AccountCreateExceptions("User exists");

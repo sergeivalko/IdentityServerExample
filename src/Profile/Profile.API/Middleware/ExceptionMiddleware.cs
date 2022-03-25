@@ -14,7 +14,8 @@ namespace Profile.API.Middleware
 
         private static readonly JsonSerializerOptions JsonSerializerOptions = new()
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
         };
 
         public ExceptionMiddleware(RequestDelegate next)
@@ -31,22 +32,21 @@ namespace Profile.API.Middleware
             catch (ValidationException validationException)
             {
                 await HandleValidationExceptionAsync(httpContext, validationException);
-            }
+            } 
             catch (Exception ex)
             {
-                await HandleExceptionAsync(httpContext, ex.Message, -1);
+                await HandleExceptionAsync(httpContext, ex.Message);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, string message, int errorCode)
+        private static Task HandleExceptionAsync(HttpContext context, string message)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
             var result = JsonSerializer.Serialize(new HttpRequestError
             {
-                ErrorCode = errorCode,
-                Error = message
+                ErrorMessage = message
             }, JsonSerializerOptions);
 
             return context.Response.WriteAsync(result);
@@ -57,13 +57,12 @@ namespace Profile.API.Middleware
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
 
-            dynamic expando = new ExpandoObject();
-            IDictionary<string, object> validationErrorObject = expando;
+            var validationErrorObject = new Dictionary<string, string>();
 
             foreach (var validationExceptionError in validationException.Errors)
             {
                 validationErrorObject[validationExceptionError.PropertyName] =
-                    new[] { validationExceptionError.ErrorMessage };
+                    validationExceptionError.ErrorMessage;
             }
 
             var result = JsonSerializer.Serialize(validationErrorObject, JsonSerializerOptions);
@@ -74,7 +73,6 @@ namespace Profile.API.Middleware
 
     public class HttpRequestError
     {
-        public int ErrorCode { get; set; }
-        public string Error { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

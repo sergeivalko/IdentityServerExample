@@ -16,19 +16,17 @@ namespace Profile.Infrastructure
     {
         private readonly ILogger<UserCreatedConsumer> _logger;
         private readonly IConsumer<string, string> _consumer;
-        private readonly IMediator _mediator;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly string _topicName;
         private readonly bool _enabled;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
 
         public UserCreatedConsumer(ILogger<UserCreatedConsumer> logger, IOptions<KafkaOptions> options,
-            IMediator mediator, IServiceProvider serviceProvider)
+            IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
             _consumer = new ConsumerBuilder<string, string>(options.Value.ConsumerConfig).Build();
-            _mediator = mediator;
-            _serviceProvider = serviceProvider;
+            _serviceScopeFactory = serviceScopeFactory;
             _topicName = options.Value.UserCreatedConsumer.TopicName;
             _enabled = options.Value.UserCreatedConsumer.Enabled;
         }
@@ -64,7 +62,12 @@ namespace Profile.Infrastructure
                         continue;
                     }
 
-                    await _mediator.Publish(new CreateProfileCommand(userCreated.AccountId), stoppingToken);
+                    await using (var scope = _serviceScopeFactory.CreateAsyncScope())
+                    {
+                        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                        await mediator.Publish(new CreateProfileCommand(userCreated.AccountId), stoppingToken);
+                    }
+                    
                     _consumer.Commit();
                 }
                 catch (Exception exception)
