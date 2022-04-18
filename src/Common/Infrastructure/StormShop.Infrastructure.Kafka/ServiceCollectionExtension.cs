@@ -10,7 +10,9 @@ namespace StormShop.Infrastructure.Kafka
         public static IServiceCollection AddProducer<T>(this IServiceCollection services, IConfiguration configuration, string topicName)
         {
             var producerConfig = configuration.GetSection("ProducerConfig").Get<ProducerConfig>();
-            services.AddScoped<IBusProducer<T>>(_ => new KafkaProducer<T>(producerConfig, topicName));
+            var producer = new ProducerBuilder<string, string>(producerConfig).Build();
+            
+            services.AddScoped<IBusProducer<T>>(_ => new KafkaProducer<T>(producer, topicName));
             return services;
         }
     }

@@ -13,9 +13,9 @@ namespace StormShop.Infrastructure.Kafka
         private readonly IProducer<string, string> _producer;
         private readonly string _topic;
 
-        public KafkaProducer(ProducerConfig producerConfig, string topic)
+        public KafkaProducer(IProducer<string, string> producer, string topic)
         {
-            _producer = new ProducerBuilder<string, string>(producerConfig).Build();
+            _producer = producer;
             _topic = topic;
         }
 
