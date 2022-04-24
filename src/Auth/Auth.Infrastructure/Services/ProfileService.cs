@@ -23,7 +23,9 @@ namespace Auth.Infrastructure.Services
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
+            var subject = context.Subject ??
+                          throw new ArgumentNullException(nameof(context.Subject),
+                              Constants.ErrorMessages.SubjectCantBeNull);
 
             var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault().Value;
 
@@ -37,7 +39,9 @@ namespace Auth.Infrastructure.Services
 
         public async Task IsActiveAsync(IsActiveContext context)
         {
-            var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
+            var subject = context.Subject ??
+                          throw new ArgumentNullException(nameof(context.Subject),
+                              Constants.ErrorMessages.SubjectCantBeNull);
 
             var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault().Value;
             var user = await _userManager.FindByIdAsync(subjectId);
@@ -48,7 +52,8 @@ namespace Auth.Infrastructure.Services
             {
                 if (_userManager.SupportsUserSecurityStamp)
                 {
-                    var security_stamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
+                    var security_stamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value)
+                        .SingleOrDefault();
                     if (security_stamp != null)
                     {
                         var db_security_stamp = await _userManager.GetSecurityStampAsync(user);
@@ -63,8 +68,8 @@ namespace Auth.Infrastructure.Services
                     user.LockoutEnd <= DateTime.Now;
             }
         }
-        
-        
+
+
         private IEnumerable<Claim> GetClaimsFromUser(User user)
         {
             var claims = new List<Claim>
@@ -81,17 +86,19 @@ namespace Auth.Infrastructure.Services
             {
                 claims.AddRange(new[]
                 {
-                    new Claim(JwtClaimTypes.Email, user.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
+                    new Claim(JwtClaimTypes.Email, user.Email), new Claim(JwtClaimTypes.EmailVerified,
+                        user.EmailConfirmed ? "true" : "false",
+                        ClaimValueTypes.Boolean)
                 });
             }
-            
+
             if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
             {
                 claims.AddRange(new[]
                 {
-                    new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
-                    new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
+                    new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber), new Claim(JwtClaimTypes.PhoneNumberVerified,
+                        user.PhoneNumberConfirmed ? "true" : "false",
+                        ClaimValueTypes.Boolean)
                 });
             }
 

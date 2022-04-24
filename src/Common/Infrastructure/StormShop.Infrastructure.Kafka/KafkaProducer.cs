@@ -8,7 +8,7 @@ using StormShop.Common.Bus;
 
 namespace StormShop.Infrastructure.Kafka
 {
-    public class KafkaProducer<T> : IBusProducer<T>, IDisposable
+    public sealed class KafkaProducer<T> : IBusProducer<T>, IDisposable
     {
         private readonly IProducer<string, string> _producer;
         private readonly string _topic;

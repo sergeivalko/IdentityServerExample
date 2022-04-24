@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StormShop.Common;
 
+#pragma warning disable
+
 namespace Auth.Tests.Database
 {
     public class DatabaseFixture
@@ -13,7 +15,7 @@ namespace Auth.Tests.Database
         public AuthContext CreateStore()
         {
             var dbContextOptions = new DbContextOptionsBuilder<AuthContext>();
-            dbContextOptions.UseInMemoryDatabase("test");
+            dbContextOptions.UseInMemoryDatabase(Guid.NewGuid().ToString("N"));
             var context = new AuthContext(dbContextOptions.Options);
 
             context.Add(new Role(AuthRoles.Admin)

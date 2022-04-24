@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using MediatR;
 
 namespace Profile.Application.Features.UpdateProfile
 {
     public record UpdateProfileCommand(Guid ProfileId, [CanBeNull] string FirstName, [CanBeNull] string LastName,
-        [CanBeNull] byte[] FileData) : INotification;
+        [CanBeNull] IEnumerable<byte> FileData) : INotification;
 }

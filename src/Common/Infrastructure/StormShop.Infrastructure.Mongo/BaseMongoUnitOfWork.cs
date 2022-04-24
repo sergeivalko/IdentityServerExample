@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using StormShop.Core.Db;
 
@@ -7,25 +6,42 @@ namespace StormShop.Infrastructure.Mongo
 {
     public abstract class BaseMongoUnitOfWork : IUnitOfWork
     {
-        public Dictionary<Type, object> repositories = new Dictionary<Type, object>();
-
-        public BaseMongoUnitOfWork(IMongoContext context)
+        protected BaseMongoUnitOfWork(IMongoContext context)
         {
-            DbContext = context;
+            _dbContext = context;
         }
 
-        public IMongoContext DbContext { get; }
+        private readonly IMongoContext _dbContext;
+        private bool _isDisposed;
 
         public async Task<bool> Commit()
         {
-            var changeAmount = await DbContext.SaveChanges();
+            var changeAmount = await _dbContext.SaveChanges();
 
             return changeAmount > 0;
         }
 
         public void Dispose()
         {
-            DbContext.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                _dbContext.Dispose();
+            }
+
+            _isDisposed = true;
+        }
+        
+        ~BaseMongoUnitOfWork()
+        {
+            Dispose(false);
         }
     }
 }

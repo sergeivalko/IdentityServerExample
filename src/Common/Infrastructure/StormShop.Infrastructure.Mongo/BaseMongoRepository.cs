@@ -11,70 +11,71 @@ namespace StormShop.Infrastructure.Mongo
 {
     public abstract class BaseMongoRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly IMongoContext Context;
-        protected readonly IMongoCollection<TEntity> DbSet;
+        private readonly IMongoContext _context;
+        private readonly IMongoCollection<TEntity> _dbSet;
+        private bool _isDisposed;
 
         protected BaseMongoRepository(IMongoContext context)
         {
-            Context = context;
-            DbSet = context.GetCollection<TEntity>(typeof(TEntity).Name);
+            _context = context;
+            _dbSet = context.GetCollection<TEntity>(typeof(TEntity).Name);
         }
 
         public virtual IQueryable<TEntity> AsQueryable()
         {
-            return DbSet.AsQueryable();
+            return _dbSet.AsQueryable();
         }
 
         public virtual IEnumerable<TEntity> GetAll()
         {
-            return DbSet.Find(Builders<TEntity>.Filter.Empty).ToList();
+            return _dbSet.Find(Builders<TEntity>.Filter.Empty).ToList();
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await DbSet.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
+            return await _dbSet.Find(Builders<TEntity>.Filter.Empty).ToListAsync();
         }
 
         public virtual IEnumerable<TEntity> FilterBy(
             Expression<Func<TEntity, bool>> filterExpression)
         {
-            return DbSet.Find(filterExpression).ToEnumerable();
+            return _dbSet.Find(filterExpression).ToEnumerable();
         }
 
         public virtual async Task<IEnumerable<TEntity>> FilterByAsync(
             Expression<Func<TEntity, bool>> filterExpression)
         {
-            return await DbSet.Find(filterExpression).ToListAsync();
+            return await _dbSet.Find(filterExpression).ToListAsync();
         }
 
         public virtual IEnumerable<TProjected> FilterBy<TProjected>(
             Expression<Func<TEntity, bool>> filterExpression,
             Expression<Func<TEntity, TProjected>> projectionExpression)
         {
-            return DbSet.Find(filterExpression).Project(projectionExpression).ToEnumerable();
+            return _dbSet.Find(filterExpression).Project(projectionExpression).ToEnumerable();
         }
 
         public virtual async Task<IEnumerable<TProjected>> FilterByAsync<TProjected>(
             Expression<Func<TEntity, bool>> filterExpression,
             Expression<Func<TEntity, TProjected>> projectionExpression)
         {
-            return await DbSet.Find(filterExpression).Project(projectionExpression).ToListAsync();
+            return await _dbSet.Find(filterExpression).Project(projectionExpression).ToListAsync();
         }
 
         public virtual TEntity FindOne(Expression<Func<TEntity, bool>> filterExpression)
         {
-            return DbSet.Find(filterExpression).FirstOrDefault();
+            return _dbSet.Find(filterExpression).FirstOrDefault();
         }
 
         public virtual Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> filterExpression)
         {
-            return Task.Run(() => DbSet.Find(filterExpression).FirstOrDefaultAsync());
+            return Task.Run(() => _dbSet.Find(filterExpression).FirstOrDefaultAsync());
         }
 
         public virtual TEntity FindById(object id)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", id);
-            return DbSet.Find(filter).SingleOrDefault();
+            return _dbSet.Find(filter).SingleOrDefault();
         }
 
         public virtual Task<TEntity> FindByIdAsync(object id)
@@ -82,47 +83,65 @@ namespace StormShop.Infrastructure.Mongo
             return Task.Run(() =>
             {
                 var filter = Builders<TEntity>.Filter.Eq("_id", id);
-                return DbSet.Find(filter).SingleOrDefaultAsync();
+                return _dbSet.Find(filter).SingleOrDefaultAsync();
             });
         }
 
         public virtual void Add(TEntity entity)
         {
-            Context.AddCommand(() => DbSet.InsertOneAsync(entity));
+            _context.AddCommand(() => _dbSet.InsertOneAsync(entity));
         }
 
         public void AddRange(ICollection<TEntity> entities)
         {
-            Context.AddCommand(() => DbSet.InsertManyAsync(entities));
+            _context.AddCommand(() => _dbSet.InsertManyAsync(entities));
         }
 
         public void Update(TEntity entity)
         {
             var id = entity.GetType().GetProperty("Id")?.GetValue(entity, null);
             var filter = Builders<TEntity>.Filter.Eq("_id", id);
-            Context.AddCommand(() => DbSet.FindOneAndReplaceAsync(filter, entity));
+            _context.AddCommand(() => _dbSet.FindOneAndReplaceAsync(filter, entity));
         }
 
         public void Remove(Expression<Func<TEntity, bool>> filterExpression)
         {
-            Context.AddCommand(() => DbSet.FindOneAndDeleteAsync(filterExpression));
+            _context.AddCommand(() => _dbSet.FindOneAndDeleteAsync(filterExpression));
         }
 
         public void RemoveById(string id)
         {
             var objectId = new ObjectId(id);
             var filter = Builders<TEntity>.Filter.Eq("_id", objectId);
-            Context.AddCommand(() => DbSet.FindOneAndDeleteAsync(filter));
+            _context.AddCommand(() => _dbSet.FindOneAndDeleteAsync(filter));
         }
 
         public void RemoveRange(Expression<Func<TEntity, bool>> filterExpression)
         {
-            Context.AddCommand(() => DbSet.DeleteManyAsync(filterExpression));
+            _context.AddCommand(() => _dbSet.DeleteManyAsync(filterExpression));
         }
 
         public void Dispose()
         {
-            Context?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                _context?.Dispose();
+            }
+
+            _isDisposed = true;
+        }
+        
+        ~BaseMongoRepository()
+        {
+            Dispose(false);
         }
     }
 }

@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace StormShop.Infrastructure.Mongo
 {
-    public class MongoContext : IMongoContext
+    public sealed class MongoContext : IMongoContext
     {
         private readonly IMongoDatabase _db;
         private readonly MongoClient _mongoClient;

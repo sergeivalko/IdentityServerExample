@@ -15,57 +15,64 @@ using Moq;
 using StormShop.Common.Bus;
 using Xunit;
 
+#pragma warning disable CA2000
+
 namespace Auth.Tests.Features
 {
     public class CreateAccountTests : IClassFixture<DatabaseFixture>
     {
-        private readonly CreateAccountHandler _handler;
+        private readonly DatabaseFixture _fixture;
         private readonly Mock<IBusProducer<UserCreated>> _busMock;
-        private readonly AuthContext _dbContext;
 
-        public CreateAccountTests(DatabaseFixture databaseFixture)
+        public CreateAccountTests(DatabaseFixture fixture)
         {
-            _dbContext = databaseFixture.CreateStore();
-            IUserStore<User> userStore = new UserStore<User, Role, AuthContext, Guid>(_dbContext);
-
-            var accountManagerMock = new UserManager<User>(userStore, null, new PasswordHasher<User>(),
-                new List<IUserValidator<User>>
-                {
-                    new UserValidator<User>(new IdentityErrorDescriber())
-                }, new List<IPasswordValidator<User>>
-                {
-                    new PasswordValidator<User>(new IdentityErrorDescriber())
-                }, new UpperInvariantLookupNormalizer(),
-                new IdentityErrorDescriber(), null, new Mock<ILogger<UserManager<User>>>().Object);
+            _fixture = fixture;
             _busMock = new Mock<IBusProducer<UserCreated>>();
-            _handler = new CreateAccountHandler(accountManagerMock, _busMock.Object);
         }
 
         [Fact]
-        public async Task HaveDuplicate_ShouldThrowException()
+        public async Task HaveDuplicateShouldThrowException()
         {
-            await _dbContext.Users.AddAsync(new User
+            var dbContext = _fixture.CreateStore();
+            await dbContext.Users.AddAsync(new User
             {
                 UserName = "sergei",
                 Email = "example1@gmail.com",
                 NormalizedEmail = "example1@gmail.com".ToUpperInvariant()
             });
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             var user = new CreateAccountCommand("sergei", "example1@gmail.com", "xxxxxDDDhhhaswWWd");
 
-            var exception = await Assert.ThrowsAsync<AccountCreateExceptions>(() =>
-                _handler.Handle(user, CancellationToken.None));
+            using var userStore = new UserStore<User, Role, AuthContext, Guid>(dbContext);
+            using var accountManagerMock = new UserManager<User>(userStore, null, new PasswordHasher<User>(),
+                new List<IUserValidator<User>> { new UserValidator<User>(new IdentityErrorDescriber()) },
+                new List<IPasswordValidator<User>> { new PasswordValidator<User>(new IdentityErrorDescriber()) },
+                new UpperInvariantLookupNormalizer(),
+                new IdentityErrorDescriber(), null, new Mock<ILogger<UserManager<User>>>().Object);
+            var handler = new CreateAccountHandler(accountManagerMock, _busMock.Object);
 
-            Assert.Contains("User exists", exception.Message);
+            var exception = await Assert.ThrowsAsync<AccountCreateExceptions>(() =>
+                handler.Handle(user, CancellationToken.None));
+
+            Assert.Contains("User exists", exception.Message, StringComparison.Ordinal);
         }
-        
+
         [Fact]
-        public async Task UserValid_ShouldSuccessfullyCreate()
+        public async Task UserValidShouldSuccessfullyCreate()
         {
             var user = new CreateAccountCommand("sergei", "example@gmail.com", "testPassword1#");
+            var dbContext = _fixture.CreateStore();
 
-            var result = await _handler.Handle(user, CancellationToken.None);
+            using var userStore = new UserStore<User, Role, AuthContext, Guid>(dbContext);
+            using var accountManagerMock = new UserManager<User>(userStore, null, new PasswordHasher<User>(),
+                new List<IUserValidator<User>> { new UserValidator<User>(new IdentityErrorDescriber()) },
+                new List<IPasswordValidator<User>> { new PasswordValidator<User>(new IdentityErrorDescriber()) },
+                new UpperInvariantLookupNormalizer(),
+                new IdentityErrorDescriber(), null, new Mock<ILogger<UserManager<User>>>().Object);
+            var handler = new CreateAccountHandler(accountManagerMock, _busMock.Object);
+            
+            var result = await handler.Handle(user, CancellationToken.None);
 
             Assert.NotEqual(result.AccountId, Guid.Empty);
             _busMock.Verify(x => x.Publish(It.IsAny<string>(),

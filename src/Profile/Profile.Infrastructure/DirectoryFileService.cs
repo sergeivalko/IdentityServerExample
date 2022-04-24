@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Profile.Application.Interfaces;
 
@@ -10,11 +12,11 @@ namespace Profile.Infrastructure
         private static readonly string DefaultDirectory =
             $"{Path.Combine(Environment.CurrentDirectory, "ProfilePhoto")}";
 
-        public async Task<string> SaveAsync(byte[] fileData)
+        public async Task<string> SaveAsync(IEnumerable<byte> fileData)
         {
             var fileName = Guid.NewGuid().ToString("N");
             var filePath = GetFilePath(fileName);
-            await File.WriteAllBytesAsync(filePath, fileData);
+            await File.WriteAllBytesAsync(filePath, fileData.ToArray());
             return fileName;
         }
 
@@ -40,7 +42,7 @@ namespace Profile.Infrastructure
             return GetFilePath(fileName);
         }
 
-        private string GetFilePath(string fileName)
+        private static string GetFilePath(string fileName)
         {
             if (!Directory.Exists(DefaultDirectory))
             {

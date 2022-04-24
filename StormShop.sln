@@ -27,11 +27,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profile.Infrastructure", "s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5CABC288-292E-4BBA-88D2-A0603C507DEA}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		README.md = README.md
-		docker-compose.yml = docker-compose.yml
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
+		docker-compose.yml = docker-compose.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{4826D383-4F0E-43B8-8B90-C624847524D3}"
@@ -40,19 +41,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{38C5E361-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{C15AE334-2AA9-4EF8-89E4-C20C8AE01D36}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormShop.Options", "src\Common\Core\StormShop.Options\StormShop.Options.csproj", "{7D7F1CC8-5C11-4BD5-8BC2-7E130F0BFF25}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormShop.Common", "src\Common\Core\StormShop.Common\StormShop.Common.csproj", "{732D88D1-0766-4882-9FD4-7F639EDBC1FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StormShop.Infrastructure.Kafka", "src\Common\Infrastructure\StormShop.Infrastructure.Kafka\StormShop.Infrastructure.Kafka.csproj", "{86B0D8FD-60C7-4E03-AC19-3EFDA363A287}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormShop.Infrastructure.Kafka", "src\Common\Infrastructure\StormShop.Infrastructure.Kafka\StormShop.Infrastructure.Kafka.csproj", "{86B0D8FD-60C7-4E03-AC19-3EFDA363A287}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StormShop.Core.Db", "src\Common\Core\StormShop.Core.Db\StormShop.Core.Db.csproj", "{ED9E9495-5C8F-4A4A-AE07-A027CBCD33FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormShop.Core.Db", "src\Common\Core\StormShop.Core.Db\StormShop.Core.Db.csproj", "{ED9E9495-5C8F-4A4A-AE07-A027CBCD33FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StormShop.Infrastructure.Mongo", "src\Common\Infrastructure\StormShop.Infrastructure.Mongo\StormShop.Infrastructure.Mongo.csproj", "{E3AA5AA3-AE23-4660-AF40-75DB19B5AA4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormShop.Infrastructure.Mongo", "src\Common\Infrastructure\StormShop.Infrastructure.Mongo\StormShop.Infrastructure.Mongo.csproj", "{E3AA5AA3-AE23-4660-AF40-75DB19B5AA4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B38DBA8A-9019-4B55-BCAA-35940339A8E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Tests", "tests\Auth.Tests\Auth.Tests.csproj", "{0605A88A-D56A-4EF8-9F9F-AE0AC7A044A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth.Tests", "tests\Auth.Tests\Auth.Tests.csproj", "{0605A88A-D56A-4EF8-9F9F-AE0AC7A044A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,10 +91,6 @@ Global
 		{B55C9C2B-234E-4E7E-83B2-634498C219D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B55C9C2B-234E-4E7E-83B2-634498C219D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B55C9C2B-234E-4E7E-83B2-634498C219D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D7F1CC8-5C11-4BD5-8BC2-7E130F0BFF25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D7F1CC8-5C11-4BD5-8BC2-7E130F0BFF25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D7F1CC8-5C11-4BD5-8BC2-7E130F0BFF25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D7F1CC8-5C11-4BD5-8BC2-7E130F0BFF25}.Release|Any CPU.Build.0 = Release|Any CPU
 		{732D88D1-0766-4882-9FD4-7F639EDBC1FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{732D88D1-0766-4882-9FD4-7F639EDBC1FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{732D88D1-0766-4882-9FD4-7F639EDBC1FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -134,7 +129,6 @@ Global
 		{4826D383-4F0E-43B8-8B90-C624847524D3} = {9427251C-FE5C-458A-BB2F-48F616C7396E}
 		{38C5E361-A2ED-4371-A490-C48B12F362E6} = {4826D383-4F0E-43B8-8B90-C624847524D3}
 		{C15AE334-2AA9-4EF8-89E4-C20C8AE01D36} = {4826D383-4F0E-43B8-8B90-C624847524D3}
-		{7D7F1CC8-5C11-4BD5-8BC2-7E130F0BFF25} = {38C5E361-A2ED-4371-A490-C48B12F362E6}
 		{732D88D1-0766-4882-9FD4-7F639EDBC1FD} = {38C5E361-A2ED-4371-A490-C48B12F362E6}
 		{86B0D8FD-60C7-4E03-AC19-3EFDA363A287} = {C15AE334-2AA9-4EF8-89E4-C20C8AE01D36}
 		{ED9E9495-5C8F-4A4A-AE07-A027CBCD33FF} = {38C5E361-A2ED-4371-A490-C48B12F362E6}

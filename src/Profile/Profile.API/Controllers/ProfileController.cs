@@ -31,7 +31,7 @@ namespace Profile.API.Controllers
         [HttpPatch]
         [Route("{profileId}")]
         public async Task<IActionResult> Update([FromRoute] Guid profileId, [FromForm] UpdateProfileRequestDto body,
-            List<IFormFile> files)
+            IReadOnlyCollection<IFormFile> files)
         {
             if (!ModelState.IsValid)
             {

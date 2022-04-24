@@ -49,7 +49,7 @@ namespace Auth.Infrastructure.Seed
             }
         }
 
-        private async Task CreateRoles(RoleManager<Role> roleManager)
+        private static async Task CreateRoles(RoleManager<Role> roleManager)
         {
             var customerRoleExists = await roleManager.RoleExistsAsync(AuthRoles.Customer);
             if (!customerRoleExists)

@@ -12,7 +12,7 @@ using Profile.Application.Features.CreateProfile;
 
 namespace Profile.Infrastructure
 {
-    public class UserCreatedConsumer : BackgroundService
+    public sealed class UserCreatedConsumer : BackgroundService
     {
         private readonly ILogger<UserCreatedConsumer> _logger;
         private readonly IConsumer<string, string> _consumer;

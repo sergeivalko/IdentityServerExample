@@ -3,7 +3,7 @@ using StormShop.Infrastructure.Mongo;
 
 namespace Profile.Infrastructure.Database
 {
-    public class ProfileUnitOfWork : BaseMongoUnitOfWork, IProfileUnitOfWork
+    public sealed class ProfileUnitOfWork : BaseMongoUnitOfWork, IProfileUnitOfWork
     {
         private readonly IMongoContext _context;
         private IProfileRepository _profileRepository;
