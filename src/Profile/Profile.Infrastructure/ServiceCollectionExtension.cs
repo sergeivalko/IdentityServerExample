@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Profile.Application.Interfaces;
 using Profile.Infrastructure.Database;
 using StormShop.Infrastructure.Mongo;
@@ -22,10 +21,9 @@ namespace Profile.Infrastructure
                 .AddScoped<IProfileUnitOfWork, ProfileUnitOfWork>();
 
             services.AddMediatR(typeof(ServiceCollectionExtension));
-            services.AddScoped<IFileService, DirectoryFileService>();
             services.AddSingleton<IDateProvider, DateTimeUtcProvider>();
 
-            services.AddHostedService<UserCreatedConsumer>();
+            services.AddHostedService<AccountCreatedConsumer>();
             return services;
         }
     }

@@ -2,5 +2,5 @@
 
 namespace Profile.Infrastructure
 {
-    public record UserCreated(Guid AccountId);
+    public record AccountCreated(Guid AccountId);
 }

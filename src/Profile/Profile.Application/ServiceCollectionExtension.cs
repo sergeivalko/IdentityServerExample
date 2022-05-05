@@ -1,7 +1,5 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Profile.Application.Features.UpdateProfile;
 
 namespace Profile.Application
 {
@@ -11,15 +9,8 @@ namespace Profile.Application
         {
             services
                 .AddMediatR(typeof(ServiceCollectionExtension))
-                .AddValidators()
                 .AddAutoMapper(typeof(ServiceCollectionExtension));
             
-            return services;
-        }
-
-        private static IServiceCollection AddValidators(this IServiceCollection services)
-        {
-            services.AddValidatorsFromAssemblyContaining<UpdateProfileRequestDtoValidator>();
             return services;
         }
     }

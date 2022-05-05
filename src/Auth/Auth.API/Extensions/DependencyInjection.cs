@@ -27,7 +27,7 @@ namespace Auth.API.Extensions
 
         private static IServiceCollection AddKafka(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddProducer<UserCreated>(configuration, "NewUsers");
+            services.AddProducer<AccountCreated>(configuration, "NewUsers");
             return services;
         }
     }

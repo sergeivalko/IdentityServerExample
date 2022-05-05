@@ -19,6 +19,7 @@ namespace StormShop.Infrastructure.Mongo
             if (optionsSnapshot.Value?.Connection == null || optionsSnapshot.Value.DatabaseName == null)
             {
                 throw new ArgumentNullException(
+                    nameof(optionsSnapshot),
                     $"invalid configuration database");
             }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.Application.Events;
@@ -17,9 +16,9 @@ namespace Auth.Application.Features.Commands.CreateAccount
     public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, CreateAccountResult>
     {
         private readonly UserManager<User> _userManager;
-        private readonly IBusProducer<UserCreated> _busProducer;
+        private readonly IBusProducer<AccountCreated> _busProducer;
 
-        public CreateAccountHandler(UserManager<User> userManager, IBusProducer<UserCreated> busProducer)
+        public CreateAccountHandler(UserManager<User> userManager, IBusProducer<AccountCreated> busProducer)
         {
             _userManager = userManager;
             _busProducer = busProducer;
@@ -51,7 +50,7 @@ namespace Auth.Application.Features.Commands.CreateAccount
             }
 
             await _userManager.AddToRoleAsync(user, AuthRoles.DefaultRole);
-            await _busProducer.Publish(user.Id.ToString("N"), new UserCreated
+            await _busProducer.Publish(user.Id.ToString("N"), new AccountCreated
             {
                 AccountId = user.Id
             }, cancellationToken: cancellationToken);

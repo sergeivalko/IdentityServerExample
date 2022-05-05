@@ -27,7 +27,7 @@ namespace Profile.Application.Features.CreateProfile
 
             if (existsProfile != null)
             {
-                throw new ProfileExistsException();
+                throw new ProfileAlreadyExistsException();
             }
 
             var profile = new Domain.Profile(Guid.NewGuid(), _dateProvider.Now)

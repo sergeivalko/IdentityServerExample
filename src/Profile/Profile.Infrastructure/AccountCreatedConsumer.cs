@@ -12,16 +12,16 @@ using Profile.Application.Features.CreateProfile;
 
 namespace Profile.Infrastructure
 {
-    public sealed class UserCreatedConsumer : BackgroundService
+    public sealed class AccountCreatedConsumer : BackgroundService
     {
-        private readonly ILogger<UserCreatedConsumer> _logger;
+        private readonly ILogger<AccountCreatedConsumer> _logger;
         private readonly IConsumer<string, string> _consumer;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly string _topicName;
         private readonly bool _enabled;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
 
-        public UserCreatedConsumer(ILogger<UserCreatedConsumer> logger, IOptions<KafkaOptions> options,
+        public AccountCreatedConsumer(ILogger<AccountCreatedConsumer> logger, IOptions<KafkaOptions> options,
             IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
@@ -54,7 +54,7 @@ namespace Profile.Infrastructure
                     }
 
                     _logger.LogInformation("UserCreatedConsumer handle message: {Message}", consumeResult.Message);
-                    var userCreated = JsonSerializer.Deserialize<UserCreated>(consumeResult.Message.Value);
+                    var userCreated = JsonSerializer.Deserialize<AccountCreated>(consumeResult.Message.Value);
 
                     if (userCreated == null)
                     {

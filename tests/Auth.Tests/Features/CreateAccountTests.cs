@@ -22,12 +22,12 @@ namespace Auth.Tests.Features
     public class CreateAccountTests : IClassFixture<DatabaseFixture>
     {
         private readonly DatabaseFixture _fixture;
-        private readonly Mock<IBusProducer<UserCreated>> _busMock;
+        private readonly Mock<IBusProducer<AccountCreated>> _busMock;
 
         public CreateAccountTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
-            _busMock = new Mock<IBusProducer<UserCreated>>();
+            _busMock = new Mock<IBusProducer<AccountCreated>>();
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace Auth.Tests.Features
 
             Assert.NotEqual(result.AccountId, Guid.Empty);
             _busMock.Verify(x => x.Publish(It.IsAny<string>(),
-                    It.Is<UserCreated>(user1 =>
+                    It.Is<AccountCreated>(user1 =>
                         user1.AccountId == result.AccountId
                     ),
                     It.IsAny<Dictionary<string, string>>(),

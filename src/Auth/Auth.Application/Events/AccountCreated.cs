@@ -2,7 +2,7 @@
 
 namespace Auth.Application.Events
 {
-    public class UserCreated
+    public class AccountCreated
     {
         public Guid AccountId { get; set; }
     }
